@@ -49,7 +49,7 @@ func ScanDollars() int {
 		return -1
 	}, input)
 
-	// Parse the legit input as a float
+	// Parse the legit input as a float // Floating Point innacuracies can be ignored for now
 	//fmt.Printf("THINGY: %s\n", RealInput)
 	value, err := strconv.ParseFloat(RealInput, 64)
 	if err != nil {
@@ -69,25 +69,25 @@ func PromptUserNewAccount(AccountEntries map[int]*Account) {
 	var balance int
 	var ID int
 	for {
-		fmt.Printf("Enter the name of the new account: ")
+		fmt.Printf("New Account - Enter the name of the new account: ")
 		fmt.Scanln(&name)
-		fmt.Printf("Enter the opening balance for this account: ")
+		fmt.Printf("New Account - Enter the opening balance for this account: ")
 		balance = ScanDollars()
 		typeAccount = AssetType(PromptUserForNumber([]string{"Asset", "Liability", "Capital", "Drawing", "Revenue", "Expense"}, "Select Type: "))
-		fmt.Printf("Enter an ID, please make sure it is unique: ")
+		fmt.Printf("New Account - Enter an ID, please make sure it is unique: ")
 		fmt.Scan(&ID)
 		if appendAccount(AccountEntries, ID, name, balance, typeAccount) == 0 {
-			fmt.Printf("Success. Account has been added.")
+			fmt.Printf("    Success. Account has been added.\n")
 			break
 		} else {
-			fmt.Printf("Sorry something is not right. Maybe try a different ID...\n")
+			fmt.Printf("    Sorry something is not right. Maybe try a different ID...\n")
 		}
 
 	}
 
 }
 
-func PromptUserNewTransaction(AccountEntries map[int]*Account, journal *[]Transaction) Transaction {
+func PromptUserNewTransaction(AccountEntries map[int]*Account, Journal *[]Transaction) int {
 	transaction := Transaction{
 		Modified:    make(map[int]int), // Input by user
 		Description: "No description provided",
@@ -110,31 +110,26 @@ func PromptUserNewTransaction(AccountEntries map[int]*Account, journal *[]Transa
 		fmt.Scan(&id)
 		if _, exist := AccountEntries[id]; !exist {
 			fmt.Printf("Account does not exist. Exiting...\n")
-			//return -1
-			fmt.Printf("%s", transaction)
-			return transaction
+			return -1
 		}
 		fmt.Printf(" %d - Account #%d - Name: %s | Enter Debit/Credit: ", count, id, AccountEntries[id].Name)
 		fmt.Scan(&money)
 		transaction.Modified[id] = money
-		*journal = append(*journal, transaction)
-		fmt.Printf("%s REACHED\n", transaction)
+		*Journal = append(*Journal, transaction)
 		if PromptUserForNumber([]string{"Another", "Done"}, "Add another?") == 2 {
 			break
 		}
-		fmt.Printf("%s", transaction)
-		return transaction
+		return count
 	}
-	fmt.Printf("%s", transaction)
-	return transaction
+	return count
 }
 
 func PromptDateInput() Date {
 	var userDate Date
-	fmt.Printf("Enter Year: ")
+	fmt.Printf("Date - Enter Year: ")
 	fmt.Scan(&userDate.Year)
-	userDate.Month = MonthInt(PromptUserForNumber([]string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}, "Enter Month: "))
-	fmt.Printf("Enter Day: ")
+	userDate.Month = MonthInt(PromptUserForNumber([]string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}, "Date - Enter Month: "))
+	fmt.Printf("Date - Enter Day: ")
 	fmt.Scan(&userDate.Day)
 	return userDate
 }

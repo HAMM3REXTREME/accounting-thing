@@ -9,6 +9,30 @@ import (
 
 // Import Export Modules
 
+func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
+	// Print a header
+	headers := [4]string{"ID", "Account Name", "Type", "Balance"}
+	left2right := make([]string, 4)
+	for _, header := range headers {
+		fmt.Printf("\033[4;1;43m %-20s \033[m%s", header, delim)
+	}
+	fmt.Println()
+	for id, account := range AccountEntries {
+		// For each row
+		left2right[0] = strconv.Itoa(id)
+		left2right[1] = account.Name
+		left2right[2] = GetAssetTypeName(account.Type)
+		left2right[3] = cent2Dollar(account.Balance)
+
+		// Print with formatting
+		for _, cell := range left2right {
+			fmt.Printf("\033[4;47m %-20s \033[m%s", cell, delim)
+		}
+		fmt.Println()
+	}
+
+}
+
 func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, delim string) {
 	// This prints each transaction in a journal sequentially.
 	// Needs an AccountEntries argument to get names of accounts from IDs stored in journal.

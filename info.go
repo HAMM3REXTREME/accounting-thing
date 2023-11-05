@@ -5,6 +5,38 @@ import (
 	"strconv"
 )
 
+func GetAssetTypeName(assetType AssetType) string {
+	names := map[AssetType]string{
+		Asset:     "Asset",
+		Liability: "Liability",
+		Capital:   "Capital",
+		Drawing:   "Drawing",
+		Revenue:   "Revenue",
+		Expense:   "Expense",
+	}
+
+	return names[assetType]
+}
+
+func GetMonthName(month MonthInt) string {
+	names := map[MonthInt]string{
+		Jan: "January",
+		Feb: "February",
+		Mar: "March",
+		Apr: "April",
+		May: "May",
+		Jun: "June",
+		Jul: "July",
+		Aug: "August",
+		Sep: "September",
+		Oct: "October",
+		Nov: "November",
+		Dec: "December",
+	}
+
+	return names[month]
+}
+
 func debugPrintJournal(Journal []Transaction) {
 	for i, t := range Journal {
 		fmt.Printf("\033[2mDEBUG: Journal - Transaction %d | Description: %s | Accounts Modified:\n", i, t.Date, t.Description)
