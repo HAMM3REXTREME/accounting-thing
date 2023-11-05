@@ -60,7 +60,7 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 
 		matrix[column][1] = strconv.Itoa(transaction.Date.Day) // Write date
 		if lastDate.Month != transaction.Date.Month {
-			matrix[column][0] = strconv.Itoa(int(transaction.Date.Month)) // Only write this month if last month is different
+			matrix[column][0] = GetMonthName(transaction.Date.Month) // Only write this month if last month is different
 		}
 		lastDate.Month = transaction.Date.Month // Update our new 'last' month
 		if lastDate.Year != transaction.Date.Year {

@@ -1,10 +1,5 @@
 package main
 
-func idExists(accountEntries map[int]*Account, id int) bool {
-	_, exists := accountEntries[id]
-	return exists
-}
-
 func applyTransaction2Account(Journal []Transaction, accountEntries map[int]*Account) {
 	for _, t := range Journal {
 		for id, debit := range t.Modified {
@@ -15,7 +10,8 @@ func applyTransaction2Account(Journal []Transaction, accountEntries map[int]*Acc
 }
 
 func appendAccount(AccountEntries map[int]*Account, id int, name string, balance int, typeAccount AssetType) int {
-	if idExists(AccountEntries, id) {
+	if _, exist := AccountEntries[id]; exist {
+		//fmt.Printf("Account does exist. Exiting...\n")
 		return 1
 	}
 	newAccount := &Account{Name: name, Type: typeAccount, Balance: balance}
@@ -25,7 +21,8 @@ func appendAccount(AccountEntries map[int]*Account, id int, name string, balance
 }
 
 func updateAccountBalance(AccountEntries map[int]*Account, id int, debit int) int {
-	if !idExists(AccountEntries, id) {
+	if _, exist := AccountEntries[id]; !exist {
+		//fmt.Printf("Account does not exist. Exiting...\n")
 		return 1
 	}
 	AccountEntries[id].Balance += debit

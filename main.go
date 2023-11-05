@@ -27,8 +27,10 @@ func main() {
 
 		fmt.Println("Journal: ")
 		journal2StdOut(Journal, accountEntries, "|")
+		fmt.Println()
 		fmt.Println("Accounts: ")
 		accountInfo2StdOut(accountEntries, "|")
+		fmt.Println()
 
 		/* 		if err := journal2csv(Journal, accountEntries, "transactions.csv"); err != nil {
 		   			fmt.Printf("Error writing CSV: %v\n", err)

@@ -14,7 +14,7 @@ func PromptUserForNumber(options []string, header string) int {
 		return -1
 	}
 	fmt.Printf("%s\n", header)
-	fmt.Printf("Select an option by typing a number...\n")
+	//fmt.Printf("Select an option by typing a number...\n")
 	for number, text := range options {
 		fmt.Printf("(\033[1m%d\033[m) - %s \n", number+1, text)
 	}
