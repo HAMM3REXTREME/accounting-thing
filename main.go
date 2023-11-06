@@ -2,13 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 )
 
-func main() {
-	// Main material to be manipulated
-	accountEntries := make(map[int]*Account)
-	var Journal []Transaction
-
+func cliStart(accountEntries map[int]*Account, Journal []Transaction) {
 	for {
 		// This runs continuously
 		debugPrintAccounts(accountEntries)
@@ -39,4 +36,39 @@ func main() {
 		   		} */
 
 	}
+}
+
+func onButtonClicked() {
+	log.Println("Button clicked!")
+}
+
+func main() {
+	// Main material to be manipulated
+	accountEntries := make(map[int]*Account)
+	var Journal []Transaction
+	cliStart(accountEntries, Journal)
+	/* gtk.Init(nil)
+
+	builder, err := gtk.BuilderNew()
+	if err != nil {
+		log.Fatal("Error creating GtkBuilder:", err)
+	}
+
+	err = builder.AddFromFile("ui.glade")
+	if err != nil {
+		log.Fatal("Error loading Glade file:", err)
+	}
+
+	win, _ := builder.GetObject("main_window").(*gtk.Window)
+	button, _ := builder.GetObject("my_button").(*gtk.Button)
+
+	win.Connect("destroy", func() {
+		gtk.MainQuit()
+	})
+
+	// Connect the button click event to the onButtonClicked function
+	button.Connect("clicked", onButtonClicked)
+
+	win.ShowAll()
+	gtk.Main() */
 }
