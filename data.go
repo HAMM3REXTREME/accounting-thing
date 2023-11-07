@@ -1,6 +1,6 @@
 package main // Data
 
-import "github.com/shopspring/decimal"
+import "github.com/shopspring/decimal" // Use fixed decimal instead of floating point
 
 type MonthInt uint
 
@@ -28,7 +28,7 @@ type Date struct {
 type AssetType int
 
 const (
-	Asset AssetType = iota
+	Asset AssetType = iota // I don't get accounting
 	Liability
 	Capital
 	Drawing

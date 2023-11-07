@@ -72,7 +72,7 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 		// Walk through each transaction's modified accounts
 		for id, money := range transaction.Modified {
 			matrix[column][3] = strconv.Itoa(id) // Write Account IDs to 3rd place in our row
-			if money.GreaterThan(decimal.Zero) {
+			if money.GreaterThan(decimal.Zero) { // What is debit/credit anyways?
 				matrix[column][4] = money.StringFixedBank(2) // +ve should go in 4th place (debit)
 				matrix[column][2] = AccountEntries[id].Name  // Find name in AccountEntries map using id.
 			} else {

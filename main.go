@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+
+	"github.com/gotk3/gotk3/gtk"
 )
 
-func cliStart(accountEntries map[int]*Account, Journal []Transaction) {
+func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
 	for {
 		// This runs continuously
 		debugPrintAccounts(accountEntries)
@@ -38,37 +40,53 @@ func cliStart(accountEntries map[int]*Account, Journal []Transaction) {
 	}
 }
 
-func onButtonClicked() {
-	log.Println("Button clicked!")
+func initGUI() {
+	// Create a new builder
+	builder, err := gtk.BuilderNew()
+	if err != nil {
+		log.Fatal("Error creating builder:", err)
+	}
+
+	// Load the Glade XML file
+	err = builder.AddFromFile("./main_ui.glade")
+	if err != nil {
+		log.Fatal("Error loading Glade XML:", err)
+	}
+
+	// Create the main window
+	obj, err := builder.GetObject("main_window")
+	if err != nil {
+		log.Fatal("Error getting main_window object:", err)
+	}
+	window, ok := obj.(*gtk.Window)
+	if !ok {
+		log.Fatal("Error casting main_window object to *gtk.Window")
+	}
+	// Connect the button signal to an event handler
+	button, err := builder.GetObject("journal_button")
+	if err != nil {
+		log.Fatal("Error getting button object:", err)
+	}
+
+	button.(*gtk.Button).Connect("clicked", func() {
+		// Replace with actual function to handle this thing
+		fmt.Println("Button clicked!")
+	})
+
+	// Connect signals and handle user interactions here
+
+	// Show the main window
+	window.ShowAll()
 }
 
 func main() {
 	// Main material to be manipulated
 	accountEntries := make(map[int]*Account)
 	var Journal []Transaction
-	cliStart(accountEntries, Journal)
-	/* gtk.Init(nil)
 
-	builder, err := gtk.BuilderNew()
-	if err != nil {
-		log.Fatal("Error creating GtkBuilder:", err)
-	}
+	initCLI(accountEntries, Journal)
 
-	err = builder.AddFromFile("ui.glade")
-	if err != nil {
-		log.Fatal("Error loading Glade file:", err)
-	}
-
-	win, _ := builder.GetObject("main_window").(*gtk.Window)
-	button, _ := builder.GetObject("my_button").(*gtk.Button)
-
-	win.Connect("destroy", func() {
-		gtk.MainQuit()
-	})
-
-	// Connect the button click event to the onButtonClicked function
-	button.Connect("clicked", onButtonClicked)
-
-	win.ShowAll()
-	gtk.Main() */
+	//gtk.Init(nil)
+	//initGUI() // Initialize GUI
+	//gtk.Main() // Start the GTK main loop
 }
