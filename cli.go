@@ -5,9 +5,17 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
-	"unicode"
+
+	"github.com/shopspring/decimal"
 )
+
+func ScanName() string {
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	line := scanner.Text()
+	fmt.Println("captured:", line)
+	return line
+}
 
 func PromptUserForNumber(options []string, header string) int {
 	if len(options) == 0 {
@@ -32,48 +40,31 @@ func PromptUserForNumber(options []string, header string) int {
 	}
 }
 
-func ScanDollars() int {
+func ScanDollars() decimal.Decimal {
 	var input string
 	//fmt.Print("Enter a dollar value: ")
 	_, err := fmt.Scan(&input)
 	if err != nil {
 		fmt.Println("Error reading input:", err)
-		return 0
+		return decimal.Zero
 	}
 
-	// Remove dollar signs and other non-numeric characters
-	RealInput := strings.Map(func(r rune) rune {
-		if unicode.IsDigit(r) || r == '.' || r == '-' {
-			return r
-		}
-		return -1
-	}, input)
+	dollar, err := decimal.NewFromString(input)
+	return dollar
 
-	// Parse the legit input as a float // Floating Point innacuracies can be ignored for now
-	//fmt.Printf("THINGY: %s\n", RealInput)
-	value, err := strconv.ParseFloat(RealInput, 64)
-	if err != nil {
-		fmt.Println("Error parsing input:", err)
-		return 0
-	}
-
-	// Convert the dollar value to cents
-	cents := int(value * 100)
-
-	return cents
 }
 
 func PromptUserNewAccount(AccountEntries map[int]*Account) {
 	var name string
 	var typeAccount AssetType
-	var balance int
+	var balance decimal.Decimal
 	var ID int
 	for {
 		fmt.Printf("New Account - Enter the name of the new account: ")
-		fmt.Scanln(&name)
+		name = ScanName()
 		fmt.Printf("New Account - Enter the opening balance for this account: ")
 		balance = ScanDollars()
-		typeAccount = AssetType(PromptUserForNumber([]string{"Asset", "Liability", "Capital", "Drawing", "Revenue", "Expense"}, "Select Type: "))
+		typeAccount = AssetType(PromptUserForNumber([]string{"Asset", "Liability", "Capital", "Drawing", "Revenue", "Expense"}, "Select Type: ") - 1)
 		fmt.Printf("New Account - Enter an ID, please make sure it is unique: ")
 		fmt.Scan(&ID)
 		if appendAccount(AccountEntries, ID, name, balance, typeAccount) == 0 {
@@ -88,8 +79,9 @@ func PromptUserNewAccount(AccountEntries map[int]*Account) {
 }
 
 func PromptUserNewTransaction(AccountEntries map[int]*Account, Journal *[]Transaction) int {
+	// Temporary structure for filling up
 	transaction := Transaction{
-		Modified:    make(map[int]int), // Input by user
+		Modified:    make(map[int]decimal.Decimal), // Input by user
 		Description: "No description provided",
 		Date: Date{
 			Year:  0000,
@@ -99,27 +91,37 @@ func PromptUserNewTransaction(AccountEntries map[int]*Account, Journal *[]Transa
 	}
 
 	fmt.Printf("New Transaction - Enter a description: ")
-	fmt.Scanln(&transaction.Description)
+	transaction.Description = ScanName()
 	transaction.Date = PromptDateInput()
-	var count int = 0
+	var count int = 1
 	for {
 		var id int
-		var money int
-		count++
-		fmt.Printf("%d - Enter Account ID: ", count)
-		fmt.Scan(&id)
-		if _, exist := AccountEntries[id]; !exist {
-			fmt.Printf("Account does not exist. Exiting...\n")
-			return -1
+		var money decimal.Decimal
+		for {
+			fmt.Printf("%d - Enter Account ID: ", count)
+			fmt.Scan(&id)
+			if _, exist := AccountEntries[id]; !exist {
+				fmt.Printf("Account does not exist. Retry...\n")
+				//return -1
+			} else {
+				fmt.Printf("Account found. Proceeding...\n")
+				break
+			}
+
 		}
 		fmt.Printf(" %d - Account #%d - Name: %s | Enter Debit/Credit: ", count, id, AccountEntries[id].Name)
-		fmt.Scan(&money)
-		transaction.Modified[id] = money
-		*Journal = append(*Journal, transaction)
+		money = ScanDollars()
+		if money.IsZero() {
+			fmt.Printf("Empty transaction not counted. Done.\n")
+			break
+		}
+		transaction.Modified[id] = money         // Temporary structure for filling up...
+		*Journal = append(*Journal, transaction) // Actual recording of transaction.
+		sortJournalByDate(*Journal)              // Make sure dates are ascending...
 		if PromptUserForNumber([]string{"Another", "Done"}, "Add another?") == 2 {
 			break
 		}
-		return count
+		count++
 	}
 	return count
 }

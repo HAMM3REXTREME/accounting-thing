@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/shopspring/decimal"
 )
 
 // Import Export Modules
@@ -22,7 +24,7 @@ func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
 		left2right[0] = strconv.Itoa(id)
 		left2right[1] = account.Name
 		left2right[2] = GetAssetTypeName(account.Type)
-		left2right[3] = cent2Dollar(account.Balance)
+		left2right[3] = account.Balance.StringFixedBank(2)
 
 		// Print with formatting
 		for _, cell := range left2right {
@@ -46,9 +48,8 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 
 	var lastDate Date // Keep track of last date in between printing each transaction
 	for _, transaction := range Journal {
-		var matrix [][]string                        // Our temporary buffer to store each transaction
-		var numVerticals int                         // number of rows (height) to allocate
-		numVerticals = len(transaction.Modified) + 1 // Determine the number of rows (height)
+		var matrix [][]string                         // Our temporary buffer to store each transaction
+		numVerticals := len(transaction.Modified) + 1 // Determine the number of rows (height) to allocate
 		// Initialize the 2D temp slice
 		for i := 0; i <= numVerticals; i++ {
 			row := make([]string, 6)
@@ -71,11 +72,11 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 		// Walk through each transaction's modified accounts
 		for id, money := range transaction.Modified {
 			matrix[column][3] = strconv.Itoa(id) // Write Account IDs to 3rd place in our row
-			if money > 0 {
-				matrix[column][4] = cent2Dollar(money)      // +ve should go in 4th place (debit)
-				matrix[column][2] = AccountEntries[id].Name // Find name in AccountEntries map using id.
+			if money.GreaterThan(decimal.Zero) {
+				matrix[column][4] = money.StringFixedBank(2) // +ve should go in 4th place (debit)
+				matrix[column][2] = AccountEntries[id].Name  // Find name in AccountEntries map using id.
 			} else {
-				matrix[column][5] = cent2Dollar(intAbs(money))       // -ve should go in 5th place (credit)
+				matrix[column][5] = money.Abs().StringFixedBank(2)   // -ve should go in 5th place (credit)
 				matrix[column][2] = "    " + AccountEntries[id].Name // Credit entries have an indent
 			}
 			column = column + 1 // Next column for next modified account and its associated info.

@@ -1,5 +1,7 @@
 package main // Data
 
+import "github.com/shopspring/decimal"
+
 type MonthInt uint
 
 const (
@@ -37,11 +39,11 @@ const (
 type Account struct {
 	Name    string
 	Type    AssetType
-	Balance int
+	Balance decimal.Decimal // Fixed point decimal library
 }
 
 type Transaction struct {
-	Modified    map[int]int // Holds <Account ID --> Credit(+ve)/Debit(-ve)>
+	Modified    map[int]decimal.Decimal // Holds int Account ID --> Decimal Money(+ve or -ve)
 	Description string
 	Date        Date
 }

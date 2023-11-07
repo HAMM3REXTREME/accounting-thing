@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
 
 func GetAssetTypeName(assetType AssetType) string {
@@ -49,22 +48,7 @@ func debugPrintJournal(Journal []Transaction) {
 
 func debugPrintAccounts(AccountEntries map[int]*Account) {
 	for id, account := range AccountEntries {
-		fmt.Printf("\033[2mDEBUG: accountEntries has an entry: #%d --> Account(Name: %s,Balance: %d, Type: %d)...\033[m\n", id, account.Name, account.Balance, account.Type)
+		fmt.Printf("\033[2mDEBUG: accountEntries has an entry: #%d --> Account(Name: %s,Balance: %s, Type: %d)...\033[m\n", id, account.Name, account.Balance.StringFixedBank(2), account.Type)
 		//fmt.Printf("accountEntriesMap: Account Name: %s | Account ID: %d | Balance: %d\n", account.Name, id, account.Balance)
 	}
-}
-
-func intAbs(number int) int {
-	if number < 0 {
-		return -number
-	}
-	return number
-}
-
-func cent2Dollar(cents int) string {
-	// Convert an int value of cents to a string of dollars (No $$$ sign)
-	strCents := strconv.Itoa(cents)
-	onlyBucks := string(strCents[:len(strCents)-2]) // 0 to (last-2)
-	onlyCents := string(strCents[len(strCents)-2:]) // (last-2) to last
-	return onlyBucks + "." + onlyCents              // "999" + "." + "99"
 }
