@@ -31,11 +31,11 @@ func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
 		accountInfo2StdOut(accountEntries, "|")
 		fmt.Println()
 
-		/* 		if err := journal2csv(Journal, accountEntries, "transactions.csv"); err != nil {
-		   			fmt.Printf("Error writing CSV: %v\n", err)
-		   		} else {
-		   			fmt.Println("CSV file 'transactions.csv' has been created.")
-		   		} */
+		if err := journal2csv(Journal, accountEntries, "transactions.csv"); err != nil {
+			fmt.Printf("Error writing CSV: %v\n", err)
+		} else {
+			fmt.Println("CSV file 'transactions.csv' has been created.")
+		}
 
 	}
 }

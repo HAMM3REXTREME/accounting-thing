@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/csv"
+	"bufio"
 	"fmt"
 	"os"
 	"strconv"
@@ -99,35 +99,97 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 
 }
 
-func journal2csv(Journal []Transaction, Accounts map[int]*Account, fileName string) error {
-	file, err := os.Create(fileName)
+func journal2csv(Journal []Transaction, AccountEntries map[int]*Account, filePath string) error {
+	// Needs an AccountEntries argument to get names of accounts from IDs stored in journal.
+	var delim string = ", "
+	// Print a header
+	headers := [6]string{"Date", "Day", "Particulars", "P.R.", "Debit", "Credit"}
+
+	// Open the file for writing. Create the file if it doesn't exist, and truncate it if it does.
+	file, err := os.Create(filePath)
 	if err != nil {
+		fmt.Println("Error opening file:", err)
 		return err
 	}
-	defer file.Close()
+	defer file.Close() // Make sure to close the file when you're done.
 
-	writer := csv.NewWriter(file)
+	// Create a buffered writer for efficient writing
+	writer := bufio.NewWriter(file)
 
-	// Write the header row
-	header := []string{"Date", "Particulars", "P.R.", "Debit", "Credit"}
-	if err := writer.Write(header); err != nil {
-		return err
-	}
-
-	// Write each transaction to the CSV
-	for _, transaction := range Journal {
-		for accountID, debit := range transaction.Modified {
-			row := []string{fmt.Sprint(transaction.Date.Year), fmt.Sprint(Accounts[accountID].Name), fmt.Sprint(accountID), fmt.Sprint(debit)}
-			if err := writer.Write(row); err != nil {
-				return err
-			}
+	for _, header := range headers {
+		_, writeErr := writer.WriteString(header + delim)
+		if writeErr != nil {
+			fmt.Println("Error writing to file:", writeErr)
+			return writeErr
 		}
 	}
-
-	writer.Flush()
-	if err := writer.Error(); err != nil {
-		return err
+	_, writeErr := writer.WriteString("\n")
+	if writeErr != nil {
+		fmt.Println("Error writing to file:", writeErr)
+		return writeErr
 	}
 
+	var lastDate Date // Keep track of last date in between printing each transaction
+	for _, transaction := range Journal {
+		var matrix [][]string                         // Our temporary buffer to store each transaction
+		numVerticals := len(transaction.Modified) + 1 // Determine the number of rows (height) to allocate
+		// Initialize the 2D temp slice
+		for i := 0; i <= numVerticals; i++ {
+			row := make([]string, 6)
+			matrix = append(matrix, row)
+		}
+
+		// Filling the buffer with data starts here
+		var column = 0 // Start first row from this column
+
+		matrix[column][1] = strconv.Itoa(transaction.Date.Day) // Write date
+		if lastDate.Month != transaction.Date.Month {
+			matrix[column][0] = GetMonthName(transaction.Date.Month) + " " // Only write this month if last month is different
+		}
+		lastDate.Month = transaction.Date.Month // Update our new 'last' month
+		if lastDate.Year != transaction.Date.Year {
+			matrix[column][0] += strconv.Itoa(transaction.Date.Year) // Only write this year if last year is different
+		}
+		lastDate.Year = transaction.Date.Year // Update our new 'last' year
+
+		// Walk through each transaction's modified accounts
+		for id, money := range transaction.Modified {
+			matrix[column][3] = strconv.Itoa(id) // Write Account IDs to 3rd place in our row
+			if money.GreaterThan(decimal.Zero) { // What is debit/credit anyways?
+				matrix[column][4] = money.StringFixedBank(2) // +ve should go in 4th place (debit)
+				matrix[column][2] = AccountEntries[id].Name  // Find name in AccountEntries map using id.
+			} else {
+				matrix[column][5] = money.Abs().StringFixedBank(2)   // -ve should go in 5th place (credit)
+				matrix[column][2] = "    " + AccountEntries[id].Name // Credit entries have an indent
+			}
+			column = column + 1 // Next column for next modified account and its associated info.
+
+		}
+		matrix[numVerticals-1][2] = transaction.Description // Add transaction description to the bottom, after each modified account
+
+		// Write to file from temp var
+		for c := 0; c <= numVerticals; c++ {
+			for left2right := 0; left2right < 6; left2right++ {
+				_, writeErr := writer.WriteString(matrix[c][left2right] + delim)
+				if writeErr != nil {
+					fmt.Println("Error writing to file:", writeErr)
+					return writeErr
+				}
+
+			}
+			_, writeErr := writer.WriteString("\n")
+			if writeErr != nil {
+				fmt.Println("Error writing to file:", writeErr)
+				return writeErr
+			}
+		}
+
+		// Flush the writer to ensure that data is written to the file
+		if flushErr := writer.Flush(); flushErr != nil {
+			fmt.Println("Error flushing writer:", flushErr)
+			return flushErr
+		}
+
+	}
 	return nil
 }
