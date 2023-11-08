@@ -111,7 +111,7 @@ func journal2csv(Journal []Transaction, AccountEntries map[int]*Account, filePat
 		fmt.Println("Error opening file:", err)
 		return err
 	}
-	defer file.Close() // Make sure to close the file when you're done.
+	defer file.Close() // Make sure to close the file when done.
 
 	// Create a buffered writer for efficient writing
 	writer := bufio.NewWriter(file)
