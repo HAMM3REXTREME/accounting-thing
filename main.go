@@ -14,7 +14,7 @@ func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
 		// Ask user for options
 		var userPrompt = PromptUserForNumber([]string{"Add Account", "Add Transaction", "Edit Account", "Edit Transaction"}, "What would you like to do?")
 		if userPrompt == 1 {
-			PromptUserNewAccount(accountEntries)
+			PromptUserNewAccount(accountEntries, &Journal)
 		} else if userPrompt == 2 {
 			PromptUserNewTransaction(accountEntries, &Journal)
 			applyTransaction2Account(Journal, accountEntries)

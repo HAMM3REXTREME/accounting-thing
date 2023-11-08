@@ -14,9 +14,10 @@ import (
 func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
 	// Print a header
 	headers := [4]string{"ID", "Account Name", "Type", "Balance"}
+	paddings := [4]int{5, 40, 10, 15}
 	left2right := make([]string, 4)
-	for _, header := range headers {
-		fmt.Printf("\033[4;1;43m %-20s \033[m%s", header, delim)
+	for i, header := range headers {
+		fmt.Printf("\033[4;1;43m %s \033[m%s", padded(header, paddings[i]), delim)
 	}
 	fmt.Println()
 	for id, account := range AccountEntries {
@@ -27,11 +28,30 @@ func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
 		left2right[3] = account.Balance.StringFixedBank(2)
 
 		// Print with formatting
-		for _, cell := range left2right {
-			fmt.Printf("\033[4;47m %-20s \033[m%s", cell, delim)
+		for i, cell := range left2right {
+			fmt.Printf("\033[4;47m %s \033[m%s", padded(cell, paddings[i]), delim)
 		}
 		fmt.Println()
 	}
+
+}
+
+func padded(item string, padding int) string {
+	// Takes a string and returns a padded string. The padding is at the front for negative
+	// Pads with " " until it is a certain length
+	var padThing string // Spaces needed to have a consistent cell size for each cell in a row.
+	padLength := intAbs(padding) - len(item)
+	if padLength < 0 {
+		padLength = 0 // Ensure padding is non-negative
+	}
+	for s := 0; s < padLength; s++ {
+		padThing += " " // deltaPadding = padLength * " "
+	}
+
+	if padding < 0 { // negative padding aligns to the right
+		return padThing + item
+	}
+	return item + padThing
 
 }
 
@@ -41,8 +61,9 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 
 	// Print a header
 	headers := [6]string{"Date", "Day", "Particulars", "P.R.", "Debit", "Credit"}
-	for _, header := range headers {
-		fmt.Printf("\033[4;1;43m %-20s \033[m%s", header, delim)
+	paddings := [6]int{12, 5, 40, 5, 10, 10}
+	for i, header := range headers {
+		fmt.Printf("\033[4;1;30;43m %s \033[m%s", padded(header, paddings[i]), delim)
 	}
 	fmt.Println()
 
@@ -61,11 +82,11 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 
 		matrix[column][1] = strconv.Itoa(transaction.Date.Day) // Write date
 		if lastDate.Month != transaction.Date.Month {
-			matrix[column][0] = GetMonthName(transaction.Date.Month) // Only write this month if last month is different
+			matrix[column][0] = GetMonthName(transaction.Date.Month) + " " // Only write this month if last month is different
 		}
 		lastDate.Month = transaction.Date.Month // Update our new 'last' month
 		if lastDate.Year != transaction.Date.Year {
-			matrix[column][0] += (" " + strconv.Itoa(transaction.Date.Year)) // Only write this year if last year is different
+			matrix[column][0] += strconv.Itoa(transaction.Date.Year) // Only write this year if last year is different
 		}
 		lastDate.Year = transaction.Date.Year // Update our new 'last' year
 
@@ -82,12 +103,13 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 			column = column + 1 // Next column for next modified account and its associated info.
 
 		}
-		matrix[numVerticals-1][2] = transaction.Description // Add transaction description to the bottom, after each modified account
+		// If you use special codes like this, make sure to compensate for their spacing
+		matrix[numVerticals-1][2] = "\033[3m" + transaction.Description + "         \033[23m" // Add transaction description to the bottom, after each modified account
 
 		// Print the buffer in this format
 		for c := 0; c <= numVerticals; c++ {
 			for left2right := 0; left2right < 6; left2right++ {
-				fmt.Printf("\033[4;47m %-20s \033[m%s", matrix[c][left2right], delim)
+				fmt.Printf("\033[4;30;47m %s \033[m%s", padded(matrix[c][left2right], paddings[left2right]), delim)
 			}
 			fmt.Printf("\n")
 		}

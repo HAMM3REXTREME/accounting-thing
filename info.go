@@ -17,6 +17,13 @@ func GetAssetTypeName(assetType AssetType) string {
 	return names[assetType]
 }
 
+func intAbs(number int) int {
+	if number < 0 {
+		return -number
+	}
+	return number
+}
+
 func GetMonthName(month MonthInt) string {
 	names := map[MonthInt]string{
 		Jan: "January",
@@ -40,7 +47,7 @@ func debugPrintJournal(Journal []Transaction) {
 	for i, t := range Journal {
 		fmt.Printf("\033[2mDEBUG: Journal - Transaction %d | Description: %s | Accounts Modified:\n", i, t.Date, t.Description)
 		for id, debit := range t.Modified {
-			fmt.Printf("    Pending: Account ID: %d | Debit/Credit Entry: %d\n", id, debit)
+			fmt.Printf("    Pending: Account ID: %d | Debit/Credit Entry: %s\n", id, debit.StringFixedBank(2))
 		}
 	}
 	fmt.Printf("\033[m")
