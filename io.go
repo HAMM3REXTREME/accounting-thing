@@ -36,25 +36,6 @@ func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
 
 }
 
-func padded(item string, padding int) string {
-	// Takes a string and returns a padded string. The padding is at the front for negative
-	// Pads with " " until it is a certain length
-	var padThing string // Spaces needed to have a consistent cell size for each cell in a row.
-	padLength := intAbs(padding) - len(item)
-	if padLength < 0 {
-		padLength = 0 // Ensure padding is non-negative
-	}
-	for s := 0; s < padLength; s++ {
-		padThing += " " // deltaPadding = padLength * " "
-	}
-
-	if padding < 0 { // negative padding aligns to the right
-		return padThing + item
-	}
-	return item + padThing
-
-}
-
 func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, delim string) {
 	// This prints each transaction in a journal sequentially.
 	// Needs an AccountEntries argument to get names of accounts from IDs stored in journal.

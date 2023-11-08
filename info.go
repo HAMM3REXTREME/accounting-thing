@@ -17,13 +17,6 @@ func GetAssetTypeName(assetType AssetType) string {
 	return names[assetType]
 }
 
-func intAbs(number int) int {
-	if number < 0 {
-		return -number
-	}
-	return number
-}
-
 func GetMonthName(month MonthInt) string {
 	names := map[MonthInt]string{
 		Jan: "January",
