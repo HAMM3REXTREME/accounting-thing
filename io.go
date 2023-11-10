@@ -42,7 +42,7 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 
 	// Print a header
 	headers := [6]string{"Date", "Day", "Particulars", "P.R.", "Debit", "Credit"}
-	paddings := [6]int{12, 5, 40, 5, 10, 10}
+	paddings := [6]int{15, 5, 40, 5, 10, 10}
 	for i, header := range headers {
 		fmt.Printf("\033[4;1;30;43m %s \033[m%s", padded(header, paddings[i]), delim)
 	}
@@ -84,8 +84,7 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 			column = column + 1 // Next column for next modified account and its associated info.
 
 		}
-		// If you use special codes like this, make sure to compensate for their spacing
-		matrix[numVerticals-1][2] = "\033[3m" + transaction.Description + "         \033[23m" // Add transaction description to the bottom, after each modified account
+		matrix[numVerticals-1][2] = "\033[3m" + transaction.Description + "\033[23m" // Add transaction description to the bottom, after each modified account
 
 		// Print the buffer in this format
 		for c := 0; c <= numVerticals; c++ {

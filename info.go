@@ -38,7 +38,7 @@ func GetMonthName(month MonthInt) string {
 
 func debugPrintJournal(Journal []Transaction) {
 	for i, t := range Journal {
-		fmt.Printf("\033[2mDEBUG: Journal - Transaction %d | Description: %s | Accounts Modified:\n", i, t.Date, t.Description)
+		fmt.Printf("\033[2mDEBUG: Journal - Transaction %d | Description: %s | On %d/%s/%d | Accounts Modified:\n", i, t.Description, t.Date.Year, GetMonthName(t.Date.Month), t.Date.Day)
 		for id, debit := range t.Modified {
 			fmt.Printf("    Pending: Account ID: %d | Debit/Credit Entry: %s\n", id, debit.StringFixedBank(2))
 		}
