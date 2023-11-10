@@ -7,22 +7,18 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func calculateAccountBalance(AccountEntries map[int]*Account, Journal []Transaction, first int, last int) map[int]decimal.Decimal {
-	// Create a map to store account balances
-	AccountBalances := make(map[int]decimal.Decimal)
-
-	// Initialize account balances to zero
-	for id := range AccountEntries {
-		AccountBalances[id] = decimal.NewFromInt(0)
-	}
-	for i := first; i <= last; i++ {
-		for key, value := range Journal[i].Modified {
-			AccountBalances[key] = AccountBalances[key].Add(value)
+func getTotalBalance(id int, Journal []Transaction, first int, last int) decimal.Decimal {
+	var money decimal.Decimal       // Add up all transactions for a account here
+	for i := first; i < last; i++ { // Run through first and last
+		for key, value := range Journal[i].Modified { // Look at modified account ids in Transaction.Modified
+			if key == id { // Only add value if ID is what we want
+				money = money.Add(value)
+			}
 		}
 
 	}
-	// Now, AccountBalances contains the balances of each account within the specified range
-	return AccountBalances
+	return money
+
 }
 
 func sortJournalByDate(Journal []Transaction) {
