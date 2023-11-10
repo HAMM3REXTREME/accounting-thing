@@ -14,11 +14,11 @@ const colorHeader = Underline + Black + Bold + BgYellow
 
 // Import Export Modules
 
-func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
+func accountInfo2StdOut(AccountEntries map[int]*Account, Journal []Transaction, delim string) {
 	// Print a header
-	headers := [3]string{"ID", "Account Name", "Type"}
-	paddings := [3]int{5, 40, 20}
-	left2right := make([]string, 3)
+	headers := [4]string{"ID", "Account Name", "Type", "Balance"}
+	paddings := [4]int{5, 40, 20, 15}
+	left2right := make([]string, 4)
 	for i, header := range headers {
 		fmt.Printf("%s %s %s%s", colorHeader, padded(header, paddings[i]), ResetAll, delim)
 	}
@@ -28,7 +28,7 @@ func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
 		left2right[0] = strconv.Itoa(id)
 		left2right[1] = account.Name
 		left2right[2] = GetAccountTypeName(account.Type)
-		//left2right[3] = account.Balance.StringFixedBank(2)
+		left2right[3] = getTotalBalance(id, Journal, 0, len(Journal)).StringFixedBank(2)
 
 		// Print with formatting
 		for i, cell := range left2right {

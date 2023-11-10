@@ -27,7 +27,7 @@ func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
 		journal2StdOut(Journal, accountEntries, "|")
 		fmt.Println()
 		fmt.Println("Accounts: ")
-		accountInfo2StdOut(accountEntries, "|")
+		accountInfo2StdOut(accountEntries, Journal, "|")
 		fmt.Println()
 
 		if err := journal2csv(Journal, accountEntries, "transactions.csv"); err != nil {
