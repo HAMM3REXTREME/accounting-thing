@@ -6,8 +6,8 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func getTotalBalance(id int, Journal []Transaction, first int, last int) decimal.Decimal {
-	// TODO: Make this work with contra accounts
+func getTotalBalance( /* AccountEntries map[int]*Account, */ id int, Journal []Transaction, first int, last int) decimal.Decimal {
+	// TODO: Make this work with contra accounts , but do I need to? Why do they exist anyways?
 	var money decimal.Decimal       // Add up all transactions for a account here
 	for i := first; i < last; i++ { // Run through first and last
 		for key, value := range Journal[i].Modified { // Look at modified account ids in Transaction.Modified
