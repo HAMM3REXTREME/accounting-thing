@@ -9,6 +9,9 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+const colorCell = Underline + Black + BgWhite
+const colorHeader = Underline + Black + Bold + BgYellow
+
 // Import Export Modules
 
 func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
@@ -17,7 +20,7 @@ func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
 	paddings := [4]int{5, 40, 10, 15}
 	left2right := make([]string, 4)
 	for i, header := range headers {
-		fmt.Printf("\033[4;1;43m %s \033[m%s", padded(header, paddings[i]), delim)
+		fmt.Printf("%s %s %s%s", colorHeader, padded(header, paddings[i]), ResetAll, delim)
 	}
 	fmt.Println()
 	for id, account := range AccountEntries {
@@ -29,7 +32,7 @@ func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
 
 		// Print with formatting
 		for i, cell := range left2right {
-			fmt.Printf("\033[4;47m %s \033[m%s", padded(cell, paddings[i]), delim)
+			fmt.Printf("%s %s %s%s", colorCell, padded(cell, paddings[i]), ResetAll, delim)
 		}
 		fmt.Println()
 	}
@@ -44,7 +47,7 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 	headers := [6]string{"Date", "Day", "Particulars", "P.R.", "Debit", "Credit"}
 	paddings := [6]int{15, 5, 40, 5, 10, 10}
 	for i, header := range headers {
-		fmt.Printf("\033[4;1;30;43m %s \033[m%s", padded(header, paddings[i]), delim)
+		fmt.Printf("%s %s %s%s", colorHeader, padded(header, paddings[i]), ResetAll, delim)
 	}
 	fmt.Println()
 
@@ -84,12 +87,12 @@ func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, deli
 			column = column + 1 // Next column for next modified account and its associated info.
 
 		}
-		matrix[numVerticals-1][2] = "\033[3m" + transaction.Description + "\033[23m" // Add transaction description to the bottom, after each modified account
+		matrix[numVerticals-1][2] = Italic + transaction.Description + NoItalic // Add transaction description to the bottom, after each modified account
 
 		// Print the buffer in this format
 		for c := 0; c <= numVerticals; c++ {
 			for left2right := 0; left2right < 6; left2right++ {
-				fmt.Printf("\033[4;30;47m %s \033[m%s", padded(matrix[c][left2right], paddings[left2right]), delim)
+				fmt.Printf("%s %s %s%s", colorCell, padded(matrix[c][left2right], paddings[left2right]), ResetAll, delim)
 			}
 			fmt.Printf("\n")
 		}
