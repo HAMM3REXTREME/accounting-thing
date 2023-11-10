@@ -18,6 +18,8 @@ func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
 		} else if userPrompt == 2 {
 			PromptUserNewTransaction(accountEntries, &Journal)
 
+		} else if userPrompt == 3 {
+			PromptAccountEdit(accountEntries)
 		}
 
 		debugPrintAccounts(accountEntries)

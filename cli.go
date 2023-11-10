@@ -54,11 +54,61 @@ func ScanDollars() decimal.Decimal {
 
 }
 
+func PromptAccountEdit(AccountEntries map[int]*Account) {
+	var name string // Name
+	//var contraName string       // Name(s) for contra account
+	var typeAccount AccountType // Account type
+	//var contraID int            // Contra account id(s)
+	var ID int // Main Account IDs
+	//var contraAccIDs []int      // List of contra account ids.
+	//var contraNames []string    // List of names for contra acounts.
+
+	for {
+		// Ask for a valid ID
+		fmt.Printf("Edit Account - Enter the ID of the account you want to edit: ")
+		fmt.Scan(&ID)
+		if _, exist := AccountEntries[ID]; !exist {
+			fmt.Printf("Account #%d does not exist. please try again...\n", ID)
+			//return -1
+		} else {
+			fmt.Printf("Account #%d found. Proceeding...\n", ID)
+			break
+		}
+	}
+
+	// After getting a valid ID, ask what to do with it
+	userOption := PromptUserForNumber([]string{"Change Name", "Change Type", "Add Contra Account"}, "Add a contra account?")
+	if userOption == 1 {
+		fmt.Printf("Edit Account - Enter a new name for this account")
+		name = ScanName()
+		AccountEntries[ID] = &Account{Name: name}
+		return
+	} else if userOption == 2 {
+		typeAccount = AccountType(PromptUserForNumber([]string{"Asset", "Liability", "Capital", "Drawing", "Revenue", "Expense"}, "Select Type: ") - 1)
+		AccountEntries[ID] = &Account{Type: typeAccount}
+		return
+	}
+
+	/* 		for { // Keep asking for contra account IDs and Names, appending them to some lists until user asks to stop.
+		if PromptUserForNumber([]string{"Yes", "Done"}, "Add a contra account?") == 2 {
+			fmt.Printf("Moving on...\n")
+			break
+		}
+		fmt.Printf("New Contra Account - Enter the name of the contra account: ")
+		contraName = ScanName()
+		fmt.Printf("New Contra Account - Enter an ID, please make sure it is unique: ")
+		fmt.Scan(&contraID)
+		contraAccIDs = append(contraAccIDs, contraID)
+		contraNames = append(contraNames, contraName)
+	} */
+
+}
+
 func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transaction) {
 	var name string             // Name
 	var contraName string       // Name(s) for contra account
 	var typeAccount AccountType // Account type
-	var balance decimal.Decimal // Account Balance
+	var balance decimal.Decimal // Account Opening amount
 	var contraID int            // Contra account id(s)
 	var ID int                  // Main Account IDs
 	var contraAccIDs []int      // List of contra account ids.
@@ -81,7 +131,6 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 		typeAccount = AccountType(PromptUserForNumber([]string{"Asset", "Liability", "Capital", "Drawing", "Revenue", "Expense"}, "Select Type: ") - 1)
 		fmt.Printf("New Account - Enter an ID, please make sure it is unique: ")
 		fmt.Scan(&ID)
-		fmt.Printf("Testing with contra account with id -500\n")
 
 		for { // Keep asking for contra account IDs and Names, appending them to some lists until user asks to stop.
 			if PromptUserForNumber([]string{"Yes", "Done"}, "Add a contra account?") == 2 {

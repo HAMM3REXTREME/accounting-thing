@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/shopspring/decimal"
 )
 
 func getTotalBalance(id int, Journal []Transaction, first int, last int) decimal.Decimal {
+	// TODO: Make this work with contra accounts
 	var money decimal.Decimal       // Add up all transactions for a account here
 	for i := first; i < last; i++ { // Run through first and last
 		for key, value := range Journal[i].Modified { // Look at modified account ids in Transaction.Modified
@@ -53,7 +53,7 @@ func appendAccount(AccountEntries map[int]*Account, id int, name string, contraA
 	for i, contraID := range contraAcc {
 		// Return if requested contra account ID(s) exist
 		if _, exist := AccountEntries[contraID]; exist {
-			fmt.Printf("Contra Account already exists...\n")
+			//fmt.Printf("Contra Account already exists...\n")
 			return -1
 		} else {
 			// Make contra accounts, keeping the mind the type of contra account
