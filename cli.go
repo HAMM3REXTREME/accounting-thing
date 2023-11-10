@@ -55,11 +55,15 @@ func ScanDollars() decimal.Decimal {
 }
 
 func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transaction) {
-	var name string
-	var typeAccount AssetType
-	var balance decimal.Decimal
-	var ID int
-	// Temporary structure for filling up
+	var name string             // Name
+	var contraName string       // Name(s) for contra account
+	var typeAccount AccountType // Account type
+	var balance decimal.Decimal // Account Balance
+	var contraID int            // Contra account id(s)
+	var ID int                  // Main Account IDs
+	var contraAccIDs []int      // List of contra account ids.
+	var contraNames []string    // List of names for contra acounts.
+	// Temporary transaction structure for filling up
 	transaction := Transaction{
 		Modified:    make(map[int]decimal.Decimal), // Only this account --> opening amount
 		Description: "Opening amount for this account",
@@ -74,10 +78,25 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 		name = ScanName()
 		fmt.Printf("New Account - Enter the opening balance for this account or enter 0: ")
 		balance = ScanDollars()
-		typeAccount = AssetType(PromptUserForNumber([]string{"Asset", "Liability", "Capital", "Drawing", "Revenue", "Expense"}, "Select Type: ") - 1)
+		typeAccount = AccountType(PromptUserForNumber([]string{"Asset", "Liability", "Capital", "Drawing", "Revenue", "Expense"}, "Select Type: ") - 1)
 		fmt.Printf("New Account - Enter an ID, please make sure it is unique: ")
 		fmt.Scan(&ID)
-		if appendAccount(AccountEntries, ID, name, balance, typeAccount) == 0 {
+		fmt.Printf("Testing with contra account with id -500\n")
+
+		for { // Keep asking for contra account IDs and Names, appending them to some lists until user asks to stop.
+			if PromptUserForNumber([]string{"Yes", "Done"}, "Add a contra account?") == 2 {
+				fmt.Printf("Moving on...\n")
+				break
+			}
+			fmt.Printf("New Contra Account - Enter the name of the contra account: ")
+			contraName = ScanName()
+			fmt.Printf("New Contra Account - Enter an ID, please make sure it is unique: ")
+			fmt.Scan(&contraID)
+			contraAccIDs = append(contraAccIDs, contraID)
+			contraNames = append(contraNames, contraName)
+		}
+
+		if appendAccount(AccountEntries, ID, name, contraAccIDs, typeAccount, contraNames) == 0 {
 			if !balance.IsZero() { // Only add an opening statement to our Journal if it has a non-zero opening amount.
 				transaction.Date = PromptDateInput()
 				transaction.Modified[ID] = balance
@@ -88,7 +107,7 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 			fmt.Printf("    Success. Account has been added with no opening amount.\n")
 			break
 		} else {
-			fmt.Printf("    Sorry, Account cannot be added. Maybe try a different ID...\n")
+			fmt.Printf("    Sorry, Account cannot be added. Maybe try a different ID (main or contra)...\n")
 		}
 
 	}

@@ -72,21 +72,23 @@ type Date struct {
 	Day   int
 }
 
-type AssetType int
+type AccountType int
 
 const (
-	Asset AssetType = iota // I don't get accounting
+	Asset AccountType = iota // I don't get accounting
 	Liability
 	Capital
 	Drawing
 	Revenue
 	Expense
+	ContraAsset
+	ContraLiability
 )
 
 type Account struct {
-	Name    string
-	Type    AssetType
-	Balance decimal.Decimal // Fixed point decimal library
+	Name           string
+	Type           AccountType
+	ContraAccounts []int
 }
 
 type Transaction struct {

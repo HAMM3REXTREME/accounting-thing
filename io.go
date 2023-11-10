@@ -16,9 +16,9 @@ const colorHeader = Underline + Black + Bold + BgYellow
 
 func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
 	// Print a header
-	headers := [4]string{"ID", "Account Name", "Type", "Balance"}
-	paddings := [4]int{5, 40, 10, 15}
-	left2right := make([]string, 4)
+	headers := [3]string{"ID", "Account Name", "Type"}
+	paddings := [3]int{5, 40, 20}
+	left2right := make([]string, 3)
 	for i, header := range headers {
 		fmt.Printf("%s %s %s%s", colorHeader, padded(header, paddings[i]), ResetAll, delim)
 	}
@@ -27,8 +27,8 @@ func accountInfo2StdOut(AccountEntries map[int]*Account, delim string) {
 		// For each row
 		left2right[0] = strconv.Itoa(id)
 		left2right[1] = account.Name
-		left2right[2] = GetAssetTypeName(account.Type)
-		left2right[3] = account.Balance.StringFixedBank(2)
+		left2right[2] = GetAccountTypeName(account.Type)
+		//left2right[3] = account.Balance.StringFixedBank(2)
 
 		// Print with formatting
 		for i, cell := range left2right {

@@ -4,17 +4,19 @@ import (
 	"fmt"
 )
 
-func GetAssetTypeName(assetType AssetType) string {
-	names := map[AssetType]string{
-		Asset:     "Asset",
-		Liability: "Liability",
-		Capital:   "Capital",
-		Drawing:   "Drawing",
-		Revenue:   "Revenue",
-		Expense:   "Expense",
+func GetAccountTypeName(accountT AccountType) string {
+	names := map[AccountType]string{
+		Asset:           "Asset",
+		Liability:       "Liability",
+		Capital:         "Capital",
+		Drawing:         "Drawing",
+		Revenue:         "Revenue",
+		Expense:         "Expense",
+		ContraAsset:     "Contra Asset",
+		ContraLiability: "Contra Liability",
 	}
 
-	return names[assetType]
+	return names[accountT]
 }
 
 func GetMonthName(month MonthInt) string {
@@ -48,7 +50,7 @@ func debugPrintJournal(Journal []Transaction) {
 
 func debugPrintAccounts(AccountEntries map[int]*Account) {
 	for id, account := range AccountEntries {
-		fmt.Printf("\033[2mDEBUG: accountEntries has an entry: #%d --> Account(Name: %s,Balance: %s, Type: %d)...\033[m\n", id, account.Name, account.Balance.StringFixedBank(2), account.Type)
+		fmt.Printf("\033[2mDEBUG: accountEntries has an entry: #%d --> Account(Name: %s,Associated Contras: %s, Type: %d)...\033[m\n", id, account.Name, account.ContraAccounts, account.Type)
 		//fmt.Printf("accountEntriesMap: Account Name: %s | Account ID: %d | Balance: %d\n", account.Name, id, account.Balance)
 	}
 }

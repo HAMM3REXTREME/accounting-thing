@@ -17,8 +17,7 @@ func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
 			PromptUserNewAccount(accountEntries, &Journal)
 		} else if userPrompt == 2 {
 			PromptUserNewTransaction(accountEntries, &Journal)
-			applyTransaction2Account(Journal, accountEntries)
-			fmt.Printf("Applied this transaction.\n")
+
 		}
 
 		debugPrintAccounts(accountEntries)
