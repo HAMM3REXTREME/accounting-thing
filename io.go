@@ -40,8 +40,8 @@ func accountInfo2StdOut(AccountEntries map[int]*Account, Journal []Transaction, 
 }
 
 func journal2StdOut(Journal []Transaction, AccountEntries map[int]*Account, delim string) {
-	// This prints each transaction in a journal sequentially.
-	// Needs an AccountEntries argument to get names of accounts from IDs stored in journal.
+	// This prints each transaction in a journal sequentially, the format of each transaction is standard.
+	// Needs an AccountEntries argument to get names of accounts from IDs stored in Journal.
 
 	// Print a header
 	headers := [6]string{"Date", "Day", "Particulars", "P.R.", "Debit", "Credit"}

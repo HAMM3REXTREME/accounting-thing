@@ -10,6 +10,7 @@ import (
 )
 
 func ScanName() string {
+	// Scans a line. Will count spaces.
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	line := scanner.Text()
@@ -18,6 +19,7 @@ func ScanName() string {
 }
 
 func PromptUserForNumber(options []string, header string) int {
+	// Takes a list of string options to ask along with a header prompt, then returns the number selected.
 	if len(options) == 0 {
 		return -1
 	}
@@ -41,6 +43,7 @@ func PromptUserForNumber(options []string, header string) int {
 }
 
 func ScanDollars() decimal.Decimal {
+	// Returns a decimal.Decimal amount. Use for money values.
 	var input string
 	//fmt.Print("Enter a dollar value: ")
 	_, err := fmt.Scan(&input)
@@ -52,6 +55,17 @@ func ScanDollars() decimal.Decimal {
 	dollar, err := decimal.NewFromString(input)
 	return dollar
 
+}
+
+func PromptDateInput() Date {
+	// Asks user for Date, and returns a Date.
+	var userDate Date
+	fmt.Printf("Date - Enter Year: ")
+	fmt.Scan(&userDate.Year)
+	userDate.Month = MonthInt(PromptUserForNumber([]string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}, "Date - Enter Month: "))
+	fmt.Printf("Date - Enter Day: ")
+	fmt.Scan(&userDate.Day)
+	return userDate
 }
 
 func PromptAccountEdit(AccountEntries map[int]*Account) {
@@ -105,6 +119,8 @@ func PromptAccountEdit(AccountEntries map[int]*Account) {
 }
 
 func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transaction) {
+	// This function will modify the arg variables to add an account (and opening entry) based on input.
+
 	var name string             // Name
 	var contraName string       // Name(s) for contra account
 	var typeAccount AccountType // Account type
@@ -113,8 +129,7 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 	var ID int                  // Main Account IDs
 	var contraAccIDs []int      // List of contra account ids.
 	var contraNames []string    // List of names for contra acounts.
-	// Temporary transaction structure for filling up
-	transaction := Transaction{
+	transaction := Transaction{ // Temporary transaction structure for filling up
 		Modified:    make(map[int]decimal.Decimal), // Only this account --> opening amount
 		Description: "Opening amount for this account",
 		Date: Date{
@@ -123,6 +138,7 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 			Day:   0,
 		},
 	}
+
 	for {
 		fmt.Printf("New Account - Enter the name of the new account: ")
 		name = ScanName()
@@ -145,7 +161,7 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 			contraNames = append(contraNames, contraName)
 		}
 
-		if appendAccount(AccountEntries, ID, name, contraAccIDs, typeAccount, contraNames) == 0 {
+		if appendAccount(AccountEntries, ID, name, contraAccIDs, typeAccount, contraNames) == 0 { // Try to append an account
 			if !balance.IsZero() { // Only add an opening statement to our Journal if it has a non-zero opening amount.
 				transaction.Date = PromptDateInput()
 				transaction.Modified[ID] = balance
@@ -164,6 +180,10 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 }
 
 func PromptUserNewTransaction(AccountEntries map[int]*Account, Journal *[]Transaction) int {
+	// This function modifies its args to add a new transaction.
+	// Journal is modified, AccountEntries is just used to check if an acount exist
+	// Returns the number of accounts modified by the transaction
+
 	// Temporary structure for filling up
 	transaction := Transaction{
 		Modified:    make(map[int]decimal.Decimal), // Input by user
@@ -175,14 +195,16 @@ func PromptUserNewTransaction(AccountEntries map[int]*Account, Journal *[]Transa
 		},
 	}
 
+	// Ask some info about transaction
 	fmt.Printf("New Transaction - Enter a description: ")
 	transaction.Description = ScanName()
 	transaction.Date = PromptDateInput()
 	var count int = 1
+	// Keep asking for account IDs and their values
 	for {
 		var id int
 		var money decimal.Decimal
-		// Keep asking for account IDs and their values
+		// Keep asking for an account until a valid one is given
 		for {
 			fmt.Printf("%d - Enter Account ID: ", count)
 			fmt.Scan(&id)
@@ -195,7 +217,7 @@ func PromptUserNewTransaction(AccountEntries map[int]*Account, Journal *[]Transa
 			}
 
 		}
-		// Ask for debit/credit entry for this account id
+		// Ask for debit/credit entry for this (valid) account id
 		fmt.Printf(" %d - Account #%d - Name: %s | Enter Debit/Credit: ", count, id, AccountEntries[id].Name)
 		money = ScanDollars()
 		if money.IsZero() { // Only count this entry if money is not zero and if it is zero, exit without adding it to our temp transaction.
@@ -205,23 +227,14 @@ func PromptUserNewTransaction(AccountEntries map[int]*Account, Journal *[]Transa
 			break
 		}
 		transaction.Modified[id] = money // When we have our account info done (and money is not zero), we add it here for now.
+
 		// Actual recording of transaction, after confirming this is all.
 		if PromptUserForNumber([]string{"Another", "Done"}, "Add another?") == 2 {
 			*Journal = append(*Journal, transaction) // Add our temp transaction to our actual Ledger.
 			sortJournalByDate(*Journal)              // Make sure dates are ascending...
 			break
 		}
-		count++
+		count++ // Increment the counter for number of accounts inputted
 	}
 	return count
-}
-
-func PromptDateInput() Date {
-	var userDate Date
-	fmt.Printf("Date - Enter Year: ")
-	fmt.Scan(&userDate.Year)
-	userDate.Month = MonthInt(PromptUserForNumber([]string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}, "Date - Enter Month: "))
-	fmt.Printf("Date - Enter Day: ")
-	fmt.Scan(&userDate.Day)
-	return userDate
 }
