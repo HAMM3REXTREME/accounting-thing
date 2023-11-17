@@ -120,26 +120,26 @@ func PromptAccountEdit(AccountEntries map[int]*Account) {
 
 func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transaction) {
 	// This function will modify the arg variables to add an account (and opening entry) based on input.
-
-	var name string             // Name
-	var contraName string       // Name(s) for contra account
-	var typeAccount AccountType // Account type
-	var balance decimal.Decimal // Account Opening amount
-	var contraID int            // Contra account id(s)
-	var ID int                  // Main Account IDs
-	var contraAccIDs []int      // List of contra account ids.
-	var contraNames []string    // List of names for contra acounts.
-	transaction := Transaction{ // Temporary transaction structure for filling up
-		Modified:    make(map[int]decimal.Decimal), // Only this account --> opening amount
-		Description: "Opening amount for this account",
-		Date: Date{
-			Year:  0000,
-			Month: Jan,
-			Day:   0,
-		},
-	}
-
+	// Keep asking until a valid outcome
 	for {
+		var name string             // Name
+		var contraName string       // Name(s) for contra account
+		var typeAccount AccountType // Account type
+		var balance decimal.Decimal // Account Opening amount
+		var contraID int            // Contra account id(s)
+		var ID int                  // Main Account IDs
+		var contraAccIDs []int      // List of contra account ids.
+		var contraNames []string    // List of names for contra acounts.
+		transaction := Transaction{ // Temporary transaction structure for filling up
+			Modified:    make(map[int]decimal.Decimal), // Only this account --> opening amount
+			Description: "Opening amount for this account",
+			Date: Date{
+				Year:  0000,
+				Month: Jan,
+				Day:   0,
+			},
+		}
+
 		fmt.Printf("New Account - Enter the name of the new account: ")
 		name = ScanName()
 		fmt.Printf("New Account - Enter the opening balance for this account or enter 0: ")
