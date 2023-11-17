@@ -28,7 +28,7 @@ func accountInfo2StdOut(AccountEntries map[int]*Account, Journal []Transaction, 
 		left2right[0] = strconv.Itoa(id)
 		left2right[1] = account.Name
 		left2right[2] = GetAccountTypeName(account.Type)
-		left2right[3] = getTotalBalance(id, Journal, 0, len(Journal)).StringFixedBank(2)
+		left2right[3] = getTotalBalance(AccountEntries, id, Journal, 0, len(Journal), true).StringFixedBank(2)
 
 		// Print with formatting
 		for i, cell := range left2right {

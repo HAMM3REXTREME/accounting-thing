@@ -6,22 +6,35 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func getTotalBalance( /* AccountEntries map[int]*Account, */ id int, Journal []Transaction, first int, last int) decimal.Decimal {
-	// TODO: Make this work with contra accounts , but do I need to? Why do they exist anyways?
-	var money decimal.Decimal       // Add up all transactions for a account here
-	for i := first; i < last; i++ { // Run through first and last
-		for key, value := range Journal[i].Modified { // Look at modified account ids in Transaction.Modified
-			if key == id { // Only add value if ID is what we want
-				money = money.Add(value)
+func getTotalBalance(AccountEntries map[int]*Account, id int, Journal []Transaction, first int, last int, addContras bool) decimal.Decimal {
+	// Returns total balance for an account id between 2 indices in a Journal. Uses AccountEntries to get Contra account information.
+	// Whether to consider contra accounts can be controlled
+
+	var totalMoney decimal.Decimal // Add up all transactions for a account here
+	var Contras []int = []int{}
+	if addContras {
+		Contras = append(Contras, AccountEntries[id].ContraAccounts...)
+	}
+	for i := first; i < last; i++ { // Run through first and last transaction to look through
+		for key, value := range Journal[i].Modified { // Look at each modified account ids in Transaction.Modified
+			if key == id {
+				totalMoney = totalMoney.Add(value)
+			}
+			// Only add value if ID is in the addedIDs slice
+			for _, Contra := range Contras {
+				if key == Contra {
+					totalMoney = totalMoney.Sub(value)
+				}
 			}
 		}
 
 	}
-	return money
+	return totalMoney
 
 }
 
 func sortJournalByDate(Journal []Transaction) {
+	// Sorts a Journal by Date.
 	// This func sorts by Date(int, MonthInt, int), can be improved
 	// This is used by sort.Slice()
 	less := func(i, j int) bool {
