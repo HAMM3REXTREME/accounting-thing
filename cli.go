@@ -167,9 +167,9 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 				transaction.Modified[ID] = balance
 				*Journal = append(*Journal, transaction) // Add our temp opening transaction to our actual Ledger.
 				sortJournalByDate(*Journal)
-				fmt.Printf("    Success. Account has been added along with opening amount transaction to journal.\n")
+				fmt.Printf("    Successfully added opening amount to the journal...\n")
 			}
-			fmt.Printf("    Success. Account has been added with no opening amount.\n")
+			fmt.Printf("    Success. Account has been created.\n")
 			break
 		} else {
 			fmt.Printf("    Sorry, Account cannot be added. Maybe try a different ID (main or contra)...\n")
