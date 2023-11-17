@@ -1,4 +1,4 @@
-package main // Data
+package main // Main Accounting Data
 
 import "github.com/shopspring/decimal" // Use fixed decimal instead of floating point
 

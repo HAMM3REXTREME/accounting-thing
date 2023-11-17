@@ -8,27 +8,26 @@ import (
 )
 
 func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
+	// This runs continuously
 	for {
-		// This runs continuously
-		debugPrintAccounts(accountEntries)
 		// Ask user for options
 		var userPrompt = PromptUserForNumber([]string{"Add Account", "Add Transaction", "Edit Account", "Edit Transaction"}, "What would you like to do?")
 		if userPrompt == 1 {
 			PromptUserNewAccount(accountEntries, &Journal)
 		} else if userPrompt == 2 {
 			PromptUserNewTransaction(accountEntries, &Journal)
-
 		} else if userPrompt == 3 {
 			PromptAccountEdit(accountEntries)
+		} else if userPrompt == 4 {
+			fmt.Println("Sorry, not implemented yet...")
 		}
 
 		debugPrintAccounts(accountEntries)
 		debugPrintJournal(Journal)
 
-		fmt.Println("Journal: ")
+		fmt.Println("\nJournal: ")
 		journal2StdOut(Journal, accountEntries, "|")
-		fmt.Println()
-		fmt.Println("Accounts: ")
+		fmt.Println("\nAccounts: ")
 		accountInfo2StdOut(accountEntries, Journal, "|")
 		fmt.Println()
 
