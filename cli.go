@@ -149,8 +149,8 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 		fmt.Scan(&ID)
 
 		for { // Keep asking for contra account IDs and Names, appending them to some lists until user asks to stop.
-			if PromptUserForNumber([]string{"Yes", "Done"}, "Add a contra account?") == 2 {
-				fmt.Printf("Moving on...\n")
+			if PromptUserForNumber([]string{"Done", "Yes"}, "Add a contra account?") == 1 {
+				fmt.Printf("Continuing...\n")
 				break
 			}
 			fmt.Printf("New Contra Account - Enter the name of the contra account: ")
