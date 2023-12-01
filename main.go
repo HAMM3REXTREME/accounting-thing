@@ -19,7 +19,7 @@ func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
 		} else if userPrompt == 3 {
 			PromptAccountEdit(accountEntries)
 		} else if userPrompt == 4 {
-			fmt.Println("Sorry, not implemented yet...")
+			PromptUserEditTransaction(accountEntries, Journal)
 		}
 
 		debugPrintAccounts(accountEntries)
