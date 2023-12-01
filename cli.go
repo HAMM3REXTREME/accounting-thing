@@ -179,6 +179,79 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 
 }
 
+func PromptUserEditTransaction(AccountEntries map[int]*Account, Journal []Transaction) int {
+	// This function modifies its args to add a new transaction.
+	// Journal is modified, AccountEntries is just used to check if an acount exist
+
+	var transactionNum int
+	fmt.Printf("Enter transaction number (starts from 0): ")
+	fmt.Scan(&transactionNum)
+	if len(Journal) < transactionNum {
+		fmt.Printf("This transaction does not exist.\n")
+		return -1
+	}
+
+			// Temporary structure for filling up
+			transaction := Transaction{
+				Modified:    Journal[transactionNum].Modified, // Selected transaction
+				Description: "foo",
+				Date: Date{
+					Year:  0000,
+					Month: Jan,
+					Day:   0,
+				},
+			}
+	var userPrompt = PromptUserForNumber([]string{"Edit Description", "Add/Edit Modified Accounts", "Edit Date"}, "What would you like to do with this transaction?")
+	if userPrompt == 1 {
+		fmt.Printf("Enter a new desscription for transaction %s: \n",transactionNum)
+		Journal[transactionNum].Description = ScanName()
+		return 1
+	} else if userPrompt == 2 {
+		var count int = 1
+		// Keep asking for account IDs and their values
+		for {
+			var id int
+			var money decimal.Decimal
+			// Keep asking for an account until a valid one is given
+			for {
+				fmt.Printf("%d - Enter Account ID: ", count)
+				fmt.Scan(&id)
+				if _, exist := AccountEntries[id]; !exist {
+					fmt.Printf("Account #%d does not exist. please try again...\n", id)
+					//return -1
+				} else {
+					fmt.Printf("Account #%d found. Proceeding...\n", id)
+					break
+				}
+	
+			}
+			// Ask for debit/credit entry for this (valid) account id
+			fmt.Printf(" %d - Account #%d - Name: %s | Enter Debit/Credit: ", count, id, AccountEntries[id].Name)
+			money = ScanDollars()
+			if money.IsZero() { // Only count this entry if money is not zero and if it is zero, exit without adding it to our temp transaction.
+				Journal[transactionNum].Modified = transaction.Modified
+				fmt.Printf("Empty transaction not counted. Done.\n")
+				break
+			}
+			transaction.Modified[id] = money // When we have our account info done (and money is not zero), we add it here for now.
+	
+			// Actual recording of transaction, after confirming this is all.
+			if PromptUserForNumber([]string{"Another", "Done"}, "Add another?") == 2 {
+				Journal[transactionNum].Modified = transaction.Modified
+
+				break
+			}
+			count++ // Increment the counter for number of accounts inputted
+		}
+		return 2
+	} else if userPrompt == 3 {
+		Journal[transactionNum].Date = PromptDateInput()
+		sortJournalByDate(Journal)              // Make sure dates are ascending...
+		return 3
+	}
+	return 0
+}
+
 func PromptUserNewTransaction(AccountEntries map[int]*Account, Journal *[]Transaction) int {
 	// This function modifies its args to add a new transaction.
 	// Journal is modified, AccountEntries is just used to check if an acount exist
