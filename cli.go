@@ -101,6 +101,9 @@ func PromptAccountEdit(AccountEntries map[int]*Account) {
 		typeAccount = AccountType(PromptUserForNumber([]string{"Asset", "Liability", "Capital", "Drawing", "Revenue", "Expense"}, "Select Type: ") - 1)
 		AccountEntries[ID] = &Account{Type: typeAccount}
 		return
+	} else if userOption == 3 {
+		fmt.Printf("Sorry, not implemented yet...\n")
+		return
 	}
 
 	/* 		for { // Keep asking for contra account IDs and Names, appending them to some lists until user asks to stop.
@@ -149,7 +152,7 @@ func PromptUserNewAccount(AccountEntries map[int]*Account, Journal *[]Transactio
 		fmt.Scan(&ID)
 
 		for { // Keep asking for contra account IDs and Names, appending them to some lists until user asks to stop.
-			if PromptUserForNumber([]string{"Done", "Yes"}, "Add a contra account?") == 1 {
+			if PromptUserForNumber([]string{"Yes", "Done"}, "Add a contra account?") == 2 {
 				fmt.Printf("Continuing...\n")
 				break
 			}
