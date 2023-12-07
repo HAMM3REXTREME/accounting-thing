@@ -50,7 +50,7 @@ func debugPrintJournal(Journal []Transaction) {
 
 func debugPrintAccounts(AccountEntries map[int]*Account) {
 	for id, account := range AccountEntries {
-		fmt.Printf("\033[2mDEBUG: accountEntries has an entry: #%d --> Account(Name: %s,Associated Contras: %s, Type: %d)...\033[m\n", id, account.Name, account.ContraAccounts, account.Type)
+		fmt.Printf("\033[2mDEBUG: accountEntries has an entry: #%d --> Account(Name: %s, Associated Contras: %s, Type: %d)...\033[m\n", id, account.Name, account.ContraAccounts, account.Type)
 		//fmt.Printf("accountEntriesMap: Account Name: %s | Account ID: %d | Balance: %d\n", account.Name, id, account.Balance)
 	}
 }
