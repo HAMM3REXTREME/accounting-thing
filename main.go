@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
-
-	"github.com/gotk3/gotk3/gtk"
+	//"log"
+	//"github.com/gotk3/gotk3/gtk"
 )
 
 func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
@@ -22,8 +21,8 @@ func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
 			PromptUserEditTransaction(accountEntries, Journal)
 		}
 
-		debugPrintAccounts(accountEntries)
-		debugPrintJournal(Journal)
+		//debugPrintAccounts(accountEntries)
+		//debugPrintJournal(Journal)
 
 		fmt.Println("\nJournal: ")
 		journal2StdOut(Journal, accountEntries, "|")
@@ -31,16 +30,16 @@ func initCLI(accountEntries map[int]*Account, Journal []Transaction) {
 		accountInfo2StdOut(accountEntries, Journal, "|")
 		fmt.Println()
 
-		if err := journal2csv(Journal, accountEntries, "transactions.csv"); err != nil {
+		if err := journal2csv(Journal, accountEntries, "journal.csv"); err != nil {
 			fmt.Printf("Error writing CSV: %v\n", err)
 		} else {
-			fmt.Println("CSV file 'transactions.csv' has been created.")
+			fmt.Println("CSV file 'journal.csv' has been created.")
 		}
 
 	}
 }
 
-func initGUI() {
+/* func initGUI() {
 	// Create a new builder
 	builder, err := gtk.BuilderNew()
 	if err != nil {
@@ -77,7 +76,7 @@ func initGUI() {
 
 	// Show the main window
 	window.ShowAll()
-}
+} */
 
 func main() {
 	// Main material to be manipulated
